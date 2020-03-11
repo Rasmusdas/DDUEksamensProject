@@ -15,6 +15,13 @@ public class PlayerMovement : MonoBehaviour
    
     private Rigidbody rb;
 
+    public static GameObject playerReference;
+
+    private void Awake()
+    {
+        playerReference = gameObject;
+    }
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
