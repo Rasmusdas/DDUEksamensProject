@@ -11,6 +11,8 @@ public class Tile : MonoBehaviour
     public TileEntity lastEntity;
     public bool keepTiles;
     public PoolType type;
+
+    public Vector2 placement;
     void Start()
     {
 
@@ -55,7 +57,7 @@ public class Tile : MonoBehaviour
 
     IEnumerator DestroyTile()
     {
-        if(transform.position.y < 3)
+        if(transform.position.y <= 2.5f+heightTarget)
         {
             transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y, 3+heightTarget, lerpValue), transform.position.z);
             lerpValue += Time.deltaTime;
@@ -65,6 +67,7 @@ public class Tile : MonoBehaviour
             lerpValue = 0;
             ObjectPooling.objectPool.poolDictionary[type].Enqueue(gameObject);
             destroying = false;
+            CreateTiles.tilePlacement[Mathf.FloorToInt(placement.x), Mathf.FloorToInt(placement.y)] = false;
             gameObject.SetActive(false);
         }
         yield return new WaitForEndOfFrame();
