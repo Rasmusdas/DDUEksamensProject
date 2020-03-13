@@ -4,33 +4,53 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    private Transform player;
+    public TileEntity entity;
     private bool destroying;
     public float heightTarget;
     public float lerpValue;
-
+    public TileEntity lastEntity;
+    public bool keepTiles;
+    public PoolType type;
     void Start()
     {
-        player = PlayerMovement.playerReference.transform;
+
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        if(!destroying)
+        if (!destroying)
         {
+            float lastdist = Mathf.Infinity;
+            lastEntity = entity;
+            foreach (TileEntity tE in CreateTiles.tileEntities)
+            {
+                float dist = Vector3.Distance(transform.position, tE.gameObject.transform.position);
+                if (Vector3.Distance(transform.position, tE.gameObject.transform.position) < lastdist)
+                {
+                    lastdist = dist;
+                    lastEntity = tE;
+                }
+            }
+            entity = lastEntity;
             if (transform.position.y > heightTarget)
             {
-                transform.position = new Vector3(transform.position.x,Mathf.Lerp(transform.position.y,heightTarget,lerpValue),transform.position.z);
-                lerpValue += 0.1f;
+                transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y, heightTarget, lerpValue), transform.position.z);
+                lerpValue += Time.deltaTime;
             }
-            if (Vector3.Distance(transform.position, player.position) > 10)
+            if (Vector3.Distance(transform.position, entity.gameObject.transform.position) > entity.dissolveRange + 1)
             {
                 lerpValue = 0;
                 destroying = true;
-                StartCoroutine(DestroyTile());
+                if(keepTiles)
+                {
+                    DestroyImmediate(this);
+                }
+                else
+                {
+                    StartCoroutine(DestroyTile());
+                }
             }
         }
-        
     }
 
     IEnumerator DestroyTile()
@@ -38,12 +58,14 @@ public class Tile : MonoBehaviour
         if(transform.position.y < 3)
         {
             transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y, 3+heightTarget, lerpValue), transform.position.z);
-            lerpValue += 0.1f;
+            lerpValue += Time.deltaTime;
         }
         else
         {
-            CreateTiles.generatedTiles.Remove(gameObject);
-            DestroyImmediate(gameObject);
+            lerpValue = 0;
+            ObjectPooling.objectPool.poolDictionary[type].Enqueue(gameObject);
+            destroying = false;
+            gameObject.SetActive(false);
         }
         yield return new WaitForEndOfFrame();
         StartCoroutine(DestroyTile());

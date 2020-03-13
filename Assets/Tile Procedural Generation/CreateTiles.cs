@@ -7,8 +7,13 @@ public class CreateTiles : MonoBehaviour
     public int xSize, ySize;
     public static int randomVariation;
 
+    public Material blue, grey, yellow, white, green;
+
     public GameObject tile;
-    public GameObject player;
+    public ObjectPooling objectPools;
+    public GameObject treeTile;
+    public TileEntity[] entities;
+    public static TileEntity[] tileEntities;
     public static List<GameObject> generatedTiles = new List<GameObject>();
 
     private void Awake()
@@ -18,10 +23,11 @@ public class CreateTiles : MonoBehaviour
 
     private void Start()
     {
-        player = PlayerMovement.playerReference;
+        objectPools = ObjectPooling.objectPool;
+        tileEntities = entities;
     }
 
-    void Update()
+    void FixedUpdate()
     {
         GenerateTiles();
     }
@@ -29,47 +35,74 @@ public class CreateTiles : MonoBehaviour
 
     void GenerateTiles()
     {
-        for (int i = (-xSize / 2); i < (xSize / 2); i++)
+        foreach(TileEntity tE in tileEntities)
         {
-            for (int j = (-ySize / 2); j < (ySize / 2); j++)
+            for (int i = (-tE.xSize / 2); i < (tE.xSize / 2); i++)
             {
-                bool generateTile = true;
-                foreach(GameObject gb in generatedTiles)
+                for (int j = (-tE.xSize / 2); j < (tE.ySize / 2); j++)
                 {
-                    if (new Vector2(gb.transform.position.x, gb.transform.position.z) == new Vector2(i+ Mathf.FloorToInt(player.transform.position.x), j+ Mathf.FloorToInt(player.transform.position.z)))
+                    bool generateTile = true;
+                    Vector3 pos = new Vector3(Mathf.FloorToInt(tE.gameObject.transform.position.x) + i, 0, Mathf.FloorToInt(tE.gameObject.transform.position.z) + j);
+
+                    if (Vector3.Distance(tE.gameObject.transform.position, pos) >= tE.dissolveRange)
                     {
-                        generateTile = false;
-                        break;
+                        continue;
                     }
-                }
-                if(generateTile)
-                {
-                    float height = Mathf.PerlinNoise((i + randomVariation + Mathf.FloorToInt(player.transform.position.x)) * 0.1f, (j + randomVariation+ Mathf.FloorToInt(player.transform.position.z)) * 0.1f);
-                    GameObject newTile = Instantiate(tile, new Vector3(i+ Mathf.FloorToInt(player.transform.position.x), 3+height, j+ Mathf.FloorToInt(player.transform.position.z)), Quaternion.identity, null);
-                    if (height > 0.90f)
+
+                    if (Physics.Raycast(pos + (Vector3.down * 10), Vector3.up, out RaycastHit hit, 100f))
                     {
-                        newTile.GetComponent<MeshRenderer>().material.color = Color.red;
+                        if (hit.transform.tag != "Player")
+                        {
+                            continue;
+                        }
                     }
-                    if (height > 0.75f)
+
+                    if (generateTile)
                     {
-                        newTile.GetComponent<MeshRenderer>().material.color = Color.grey;
+                        float treeGeneration = Mathf.PerlinNoise((i + Mathf.FloorToInt(tE.gameObject.transform.position.x)) * 0.1f, (j + Mathf.FloorToInt(tE.gameObject.transform.position.z)) * 0.1f);
+                        float height = Mathf.PerlinNoise((i + randomVariation + Mathf.FloorToInt(tE.gameObject.transform.position.x)) * 0.1f, (j + randomVariation + Mathf.FloorToInt(tE.gameObject.transform.position.z)) * 0.1f);
+                        GameObject newTile = objectPools.InstantiateFromPool(PoolType.Normal, new Vector3(i + Mathf.FloorToInt(tE.gameObject.transform.position.x), 3 + height, j + Mathf.FloorToInt(tE.gameObject.transform.position.z)));
+                            //Instantiate(tile, new Vector3(i + Mathf.FloorToInt(tE.gameObject.transform.position.x), 3 + height, j + Mathf.FloorToInt(tE.gameObject.transform.position.z)), Quaternion.identity, null);
+                        if (height > 0.90f)
+                        {
+                            newTile.GetComponent<MeshRenderer>().material = white;
+                        }
+                        else if (height > 0.75f)
+                        {
+                            newTile.GetComponent<MeshRenderer>().material = grey;
+                        }
+                        else if (height > 0.5f && treeGeneration > 0.7f)
+                        {
+                            DestroyImmediate(newTile);
+                            newTile = Instantiate(treeTile, new Vector3(i + Mathf.FloorToInt(tE.gameObject.transform.position.x), 3 + height, j + Mathf.FloorToInt(tE.gameObject.transform.position.z)), Quaternion.identity, null);
+                        }
+                        else if (height > 0.5f)
+                        {
+                            newTile.GetComponent<MeshRenderer>().material = green;
+                        }
+                        else if (height > 0.35f)
+                        {
+                            newTile.GetComponent<MeshRenderer>().material = yellow;
+                        }
+                        else if (height <= 0.35f)
+                        {
+                            newTile.GetComponent<MeshRenderer>().material = blue;
+                        }
+                        newTile.GetComponent<Tile>().heightTarget = height;
+                        newTile.GetComponent<Tile>().entity = tE;
                     }
-                    else if (height > 0.5f)
-                    {
-                        newTile.GetComponent<MeshRenderer>().material.color = Color.green;
-                    }
-                    else if (height > 0.35f)
-                    {
-                        newTile.GetComponent<MeshRenderer>().material.color = Color.yellow;
-                    }
-                    else if (height <= 0.35f)
-                    {
-                        newTile.GetComponent<MeshRenderer>().material.color = Color.blue;
-                    }
-                    newTile.GetComponent<Tile>().heightTarget = height;
-                    generatedTiles.Add(newTile);
                 }
             }
         }
     }
+}
+
+
+[System.Serializable]
+public class TileEntity
+{
+    public GameObject gameObject;
+    public int xSize;
+    public int ySize;
+    public float dissolveRange;
 }
