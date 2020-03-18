@@ -231,9 +231,9 @@ MonoBehaviour:
     type: 3}
   entities:
   - gameObject: {fileID: 1544099792}
-    xSize: 50
-    ySize: 50
-    dissolveRange: 25
+    xSize: 35
+    ySize: 35
+    dissolveRange: 17
   mapSize: 1000
 --- !u!4 &77587106
 Transform:
@@ -263,7 +263,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pools:
   - type: 0
-    prefab: {fileID: 4243090157176647640, guid: 11d98ce8d57b32a4ab6b5a4099b61198,
+    prefab: {fileID: 3045475564115184167, guid: 8ada06006d540494b9eaba867e4e117e,
       type: 3}
     size: 15000
 --- !u!114 &77587108
@@ -273,7 +273,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 77587104}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 511b6fca07569504eade2b078a8695ac, type: 3}
   m_Name: 

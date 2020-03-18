@@ -9,10 +9,13 @@ public class ExportTileMap : MonoBehaviour
     public int mapSize;
     public int randomVariation;
     public int sizeOfCity;
+    public static Texture2D gameMap;
+    public static Color grey;
 
     private void Awake()
     {
         randomVariation = UnityEngine.Random.Range(-1000000, 1000000);
+        grey = Color.grey;
     }
     void Start()
     {
@@ -21,6 +24,8 @@ public class ExportTileMap : MonoBehaviour
         tileMap = AddCitiesToMap(tileMap, sizeOfCity, Color.green, Color.magenta);
 
         tileMap = AddCitiesToMap(tileMap, sizeOfCity-2, Color.yellow, Color.black);
+
+        gameMap = tileMap;
 
         SaveTextureToFile(tileMap);
     }
@@ -100,7 +105,19 @@ public class ExportTileMap : MonoBehaviour
                     {
                         for (int j = 0; j < citySize; j++)
                         {
-                            map.SetPixel(x+i,y+j,cityColor);
+                            map.SetPixel(x + i, y + j, cityColor);
+                            if (i == 0 || i + 1 == citySize)
+                            {
+                                map.SetPixel(x + i, y + j, Color.red);
+                            }
+                            if(j == 0 || j + 1 == citySize)
+                            {
+                                map.SetPixel(x + i, y + j, new Color(0.8f,0.8f,0.8f));
+                            }
+                            if ((i == 0 && j == 0) || (i + 1 == citySize && j == 0) || (i == 0 && j + 1 == citySize) || (i + 1 == citySize && j + 1 == citySize))
+                            {
+                                map.SetPixel(x + i, y + j, grey);
+                            }
                         }
                     }
                 }

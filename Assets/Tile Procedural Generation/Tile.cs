@@ -12,6 +12,19 @@ public class Tile : MonoBehaviour
     public bool keepTiles;
     public PoolType type;
 
+    public GameObject xWall;
+    public GameObject yWall;
+    public GameObject cWall;
+    public GameObject tree;
+
+    public void Deactivate()
+    {
+        xWall.SetActive(false);
+        yWall.SetActive(false);
+        cWall.SetActive(false);
+        tree.SetActive(false);
+    }
+
     public Vector2 placement;
     void Start()
     {
@@ -68,6 +81,7 @@ public class Tile : MonoBehaviour
             ObjectPooling.objectPool.poolDictionary[type].Enqueue(gameObject);
             destroying = false;
             CreateTiles.tilePlacement[Mathf.FloorToInt(placement.x), Mathf.FloorToInt(placement.y)] = false;
+            Deactivate();
             gameObject.SetActive(false);
         }
         yield return new WaitForEndOfFrame();
