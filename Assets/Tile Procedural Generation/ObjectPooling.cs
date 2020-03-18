@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Mostly from https://www.youtube.com/watch?v=tdSmKaJvCoA. But with a few changes like tag has been changed to an Enum as tag didn't make much sense for pre defined pools.
 public class ObjectPooling : MonoBehaviour
 {
 
@@ -35,7 +36,12 @@ public class ObjectPooling : MonoBehaviour
         }
     }
 
-
+    /// <summary>
+    /// Instantiates from PoolType pool.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="position"></param>
+    /// <returns></returns>
     public GameObject InstantiateFromPool(PoolType type, Vector3 position)
     {
         if(!poolDictionary.ContainsKey(type))
@@ -54,6 +60,8 @@ public class ObjectPooling : MonoBehaviour
     }
 }
 
+
+// Defines what kind of prefabs are generated from the beginning.
 [System.Serializable]
 public class Pool
 {
@@ -62,6 +70,7 @@ public class Pool
     public int size;
 }
 
+// This actually isn't used as all tiles contain all the models just not activated.
 public enum PoolType
 {
     Normal,

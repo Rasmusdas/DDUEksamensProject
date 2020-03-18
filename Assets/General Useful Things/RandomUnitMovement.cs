@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// For testing multiple TileEntities on the map
 public class RandomUnitMovement : MonoBehaviour
 {
     public float movement;

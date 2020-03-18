@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+
+// Eyyyy this doesn't work. I just copied it off the interwebs anyway c:
 public class FPSCounter : MonoBehaviour
 {
     float deltaTime = 0.0f;

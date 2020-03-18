@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Big Boi Script
+
 public class CreateTiles : MonoBehaviour
 {
     public int xSize, ySize;
-    public static int randomVariation;
+    public static int seed;
 
     public Material blue, grey, yellow, white, green;
     public GameObject tile;
@@ -20,7 +22,7 @@ public class CreateTiles : MonoBehaviour
 
     private void Awake()
     {
-        randomVariation = Random.Range(-1000000,1000000);     
+        seed = Random.Range(-1000000,1000000);     
         tilePlacement = new bool[1000, 1000];
     }
 
@@ -62,7 +64,7 @@ public class CreateTiles : MonoBehaviour
                         tilePlacement[Mathf.FloorToInt(tE.gameObject.transform.position.x) + i + mapSize / 2, Mathf.FloorToInt(tE.gameObject.transform.position.z) + j + mapSize / 2] = true;
                         Vector2 tilePlace = new Vector2(Mathf.FloorToInt(tE.gameObject.transform.position.x) + i + mapSize / 2, Mathf.FloorToInt(tE.gameObject.transform.position.z) + j + mapSize / 2);
                         float treeGeneration = Mathf.PerlinNoise((i + Mathf.FloorToInt(tE.gameObject.transform.position.x)) * 0.1f, (j + Mathf.FloorToInt(tE.gameObject.transform.position.z)) * 0.1f);
-                        float height = Mathf.PerlinNoise((i + randomVariation + Mathf.FloorToInt(tE.gameObject.transform.position.x)) * 0.01f, (j + randomVariation + Mathf.FloorToInt(tE.gameObject.transform.position.z)) * 0.01f);
+                        float height = Mathf.PerlinNoise((i + seed + Mathf.FloorToInt(tE.gameObject.transform.position.x)) * 0.01f, (j + seed + Mathf.FloorToInt(tE.gameObject.transform.position.z)) * 0.01f);
                         GameObject newTile = objectPools.InstantiateFromPool(PoolType.Normal, new Vector3(i + Mathf.FloorToInt(tE.gameObject.transform.position.x), 3+height, j + Mathf.FloorToInt(tE.gameObject.transform.position.z)));
                             //Instantiate(tile, new Vector3(i + Mathf.FloorToInt(tE.gameObject.transform.position.x), 3 + height, j + Mathf.FloorToInt(tE.gameObject.transform.position.z)), Quaternion.identity, null);
                         if (height > 0.90f)

@@ -30,6 +30,13 @@ public class ExportTileMap : MonoBehaviour
         SaveTextureToFile(tileMap);
     }
 
+
+    /// <summary>
+    /// Creates a base landscape
+    /// </summary>
+    /// <param name="xSize"> The size of the map on the x axis. </param>
+    /// <param name="ySize"> The size of the map on the y axis. </param>
+    /// <returns></returns>
     Texture2D CreateTileMap(int xSize, int ySize)
     {
         Texture2D texture = new Texture2D(xSize, ySize);
@@ -76,6 +83,14 @@ public class ExportTileMap : MonoBehaviour
         return texture;
     }
 
+    /// <summary>
+    /// Adds cities to the tilemap.
+    /// </summary>
+    /// <param name="map"> The map to add cities to </param>
+    /// <param name="citySize"> The size of the cities </param>
+    /// <param name="landScapeColor"> The color that's defined as landscape </param>
+    /// <param name="cityColor"> The color of the cities </param>
+    /// <returns></returns>
     Texture2D AddCitiesToMap(Texture2D map, int citySize,Color landScapeColor, Color cityColor)
     {
         for (int x = 0; x < map.height - citySize; x++)
@@ -129,6 +144,10 @@ public class ExportTileMap : MonoBehaviour
         return map;
     }
 
+    /// <summary>
+    /// Saves the tilemap as Tilemap.png to the documents folder in PNG format.
+    /// </summary>
+    /// <param name="map"> The tilemap to export </param>
     void SaveTextureToFile(Texture2D map)
     {
         File.WriteAllBytes(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\tilemap.png", map.EncodeToPNG());

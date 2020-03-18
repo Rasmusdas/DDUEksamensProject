@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// From DDU Projekt 03 with minor modifications to remove extra unused features
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField]
