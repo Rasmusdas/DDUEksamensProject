@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ExportTileMap : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class ExportTileMap : MonoBehaviour
     public int sizeOfCity;
     public static Texture2D gameMap;
     public static Color grey;
+    
 
     private void Awake()
     {
@@ -40,8 +42,6 @@ public class ExportTileMap : MonoBehaviour
     Texture2D CreateTileMap(int xSize, int ySize)
     {
         Texture2D texture = new Texture2D(xSize, ySize);
-
-
         for (int i = 0; i < xSize; i++)
         {
             for (int j = 0; j < ySize; j++)
@@ -77,7 +77,6 @@ public class ExportTileMap : MonoBehaviour
                 texture.SetPixel(i, j, c);
             }
         }
-
         texture.Apply();
 
         return texture;
