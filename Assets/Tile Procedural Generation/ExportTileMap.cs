@@ -12,12 +12,15 @@ public class ExportTileMap : MonoBehaviour
     public int sizeOfCity;
     public static Texture2D gameMap;
     public static Color grey;
+    public static List<City> cities;
+    public List<string> cityNames;
     
 
     private void Awake()
     {
         randomVariation = UnityEngine.Random.Range(-1000000, 1000000);
         grey = Color.grey;
+        cities = new List<City>();
     }
     void Start()
     {
@@ -90,7 +93,7 @@ public class ExportTileMap : MonoBehaviour
     /// <param name="landScapeColor"> The color that's defined as landscape </param>
     /// <param name="cityColor"> The color of the cities </param>
     /// <returns></returns>
-    Texture2D AddCitiesToMap(Texture2D map, int citySize,Color landScapeColor, Color cityColor)
+    Texture2D AddCitiesToMap(Texture2D map, int citySize, Color landScapeColor, Color cityColor)
     {
         for (int x = 0; x < map.height - citySize; x++)
         {
@@ -112,9 +115,13 @@ public class ExportTileMap : MonoBehaviour
                         break;
                     }
                 }
-
                 if(generateCity)
                 {
+                    City city = new City();
+                    city.xLocation = (x - 500) + citySize / 2;
+                    city.yLocation = (y - 500) + citySize / 2;
+                    city.name = GenerateCityName();
+                    cities.Add(city);
                     for (int i = 0; i < citySize; i++)
                     {
                         for (int j = 0; j < citySize; j++)
@@ -143,13 +150,37 @@ public class ExportTileMap : MonoBehaviour
         return map;
     }
 
+    string GenerateCityName()
+    {
+        int randomCityIndex = UnityEngine.Random.Range(0, cityNames.Count - 1);
+        string name = cityNames[UnityEngine.Random.Range(0, cityNames.Count - 1)];
+        cityNames.RemoveAt(randomCityIndex);
+        return name;
+    }
+
     /// <summary>
     /// Saves the tilemap as Tilemap.png to the documents folder in PNG format.
     /// </summary>
     /// <param name="map"> The tilemap to export </param>
     void SaveTextureToFile(Texture2D map)
     {
-        File.WriteAllBytes(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\tilemap.png", map.EncodeToPNG());
+        //File.WriteAllBytes(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\tilemap.png", map.EncodeToPNG());
     }
 
+}
+
+public class City
+{
+    public string name;
+    public CityType type;
+    public int xLocation;
+    public int yLocation;
+}
+
+
+public enum CityType
+{
+    Small,
+    Medium,
+    Big
 }

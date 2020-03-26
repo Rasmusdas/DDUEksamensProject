@@ -280,7 +280,48 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mapSize: 1000
   randomVariation: 0
-  sizeOfCity: 25
+  sizeOfCity: 30
+  cityNames:
+  - a
+  - b
+  - c
+  - d
+  - e
+  - f
+  - g
+  - h
+  - i
+  - j
+  - k
+  - l
+  - m
+  - n
+  - o
+  - p
+  - q
+  - r
+  - s
+  - t
+  - u
+  - v
+  - w
+  - x
+  - y
+  - z
+  - "\xE6"
+  - "\xF8"
+  - "\xE5"
+  - aa
+  - bb
+  - cc
+  - dd
+  - ee
+  - ff
+  - gg
+  - hh
+  - ii
+  - jj
+  - kk
 --- !u!1 &293645570
 GameObject:
   m_ObjectHideFlags: 0
