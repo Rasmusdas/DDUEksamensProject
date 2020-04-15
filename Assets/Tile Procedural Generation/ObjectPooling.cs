@@ -56,6 +56,8 @@ public class ObjectPooling : MonoBehaviour
 
         objFromPool.transform.position = position;
 
+        objFromPool.GetComponent<IPoolObject>().PoolStart();
+
         return objFromPool;
     }
 }
@@ -74,5 +76,6 @@ public class Pool
 public enum PoolType
 {
     Normal,
-    Tree
+    Tree,
+    House
 }

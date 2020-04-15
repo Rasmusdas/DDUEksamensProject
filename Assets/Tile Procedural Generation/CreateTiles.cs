@@ -64,9 +64,9 @@ public class CreateTiles : MonoBehaviour
                         tilePlacement[Mathf.FloorToInt(tE.gameObject.transform.position.x) + i + mapSize / 2, Mathf.FloorToInt(tE.gameObject.transform.position.z) + j + mapSize / 2] = true;
                         Vector2 tilePlace = new Vector2(Mathf.FloorToInt(tE.gameObject.transform.position.x) + i + mapSize / 2, Mathf.FloorToInt(tE.gameObject.transform.position.z) + j + mapSize / 2);
                         float treeGeneration = Mathf.PerlinNoise((i + Mathf.FloorToInt(tE.gameObject.transform.position.x)) * 0.1f, (j + Mathf.FloorToInt(tE.gameObject.transform.position.z)) * 0.1f);
-                        float height = Mathf.PerlinNoise((i + seed + Mathf.FloorToInt(tE.gameObject.transform.position.x)) * 0.01f, (j + seed + Mathf.FloorToInt(tE.gameObject.transform.position.z)) * 0.01f);
+                        float height = Mathf.PerlinNoise((i + seed + Mathf.FloorToInt(tE.gameObject.transform.position.x)), (j + seed + Mathf.FloorToInt(tE.gameObject.transform.position.z)));
                         GameObject newTile = objectPools.InstantiateFromPool(PoolType.Normal, new Vector3(i + Mathf.FloorToInt(tE.gameObject.transform.position.x), 3+height, j + Mathf.FloorToInt(tE.gameObject.transform.position.z)));
-                            //Instantiate(tile, new Vector3(i + Mathf.FloorToInt(tE.gameObject.transform.position.x), 3 + height, j + Mathf.FloorToInt(tE.gameObject.transform.position.z)), Quaternion.identity, null);
+                        //Instantiate(tile, new Vector3(i + Mathf.FloorToInt(tE.gameObject.transform.position.x), 3 + height, j + Mathf.FloorToInt(tE.gameObject.transform.position.z)), Quaternion.identity, null);
                         if (height > 0.90f)
                         {
                             newTile.GetComponent<MeshRenderer>().material = white;
@@ -122,8 +122,7 @@ public class CreateTiles : MonoBehaviour
                 {
                     bool generateTile = true;
                     Vector3 pos = new Vector3(Mathf.FloorToInt(tE.gameObject.transform.position.x) + i, 0, Mathf.FloorToInt(tE.gameObject.transform.position.z) + j);
-
-                    if (Vector3.Distance(tE.gameObject.transform.position, pos) >= tE.dissolveRange)
+                    if (Vector2.Distance(new Vector2(tE.gameObject.transform.position.x, tE.gameObject.transform.position.z), new Vector2(pos.x,pos.z)) >= tE.dissolveRange)
                     {
                         continue;
                     }
@@ -143,10 +142,7 @@ public class CreateTiles : MonoBehaviour
                         Color pixelColor = gameMap.GetPixel(Mathf.FloorToInt(tE.gameObject.transform.position.x) + i + mapSize / 2, Mathf.FloorToInt(tE.gameObject.transform.position.z) + j + mapSize / 2);
                         newTile.GetComponent<MeshRenderer>().material.color = pixelColor;
                         
-                        Mesh mesh = newTile.GetComponent<MeshFilter>().mesh;
-                        Vector3[] vertices = mesh.vertices;
                         Tile tile = newTile.GetComponent<Tile>();
-                        tile.heightTarget = 1f;
                         tile.entity = tE;
                         tile.placement = tilePlace;
                         if (pixelColor == Color.cyan)
@@ -165,14 +161,6 @@ public class CreateTiles : MonoBehaviour
                         {
                             tile.cWall.SetActive(true);
                         }
-                        /*
-                        for (int z = 0; z < vertices.Length; z++)
-                        {
-                            height = Mathf.PerlinNoise((i + randomVariation + Mathf.RoundToInt(tE.gameObject.transform.position.x) + (vertices[z].x * 2)) * 0.01f, (i + randomVariation + Mathf.RoundToInt(tE.gameObject.transform.position.z) + (vertices[z].z * 2)) * 0.01f);
-                            vertices[z] = new Vector3(vertices[z].x, height - newTile.transform.position.y + vertices[z].y, vertices[z].z);
-                        }
-                        mesh.vertices = vertices;
-                        */
                     }
                 }
             }

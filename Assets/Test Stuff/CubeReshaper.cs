@@ -19,7 +19,7 @@ public class CubeReshaper : MonoBehaviour
                 Vector3[] vertices = mesh.vertices;
                 for (int z = 0; z < vertices.Length; z++)
                 {
-                    height = Mathf.PerlinNoise((i + vertices[z].x) * 0.2f, (j + vertices[z].z) * 0.2f)*3;
+                    height = Mathf.PerlinNoise((i + vertices[z].x) * 0.2f, (j + vertices[z].z) * 0.2f)*5;
                     Debug.Log(cubeSpawned.name + " " + height);
                     vertices[z] = new Vector3(vertices[z].x, height - cubeSpawned.transform.position.y + vertices[z].y, vertices[z].z);
                 }

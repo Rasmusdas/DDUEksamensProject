@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Tile : MonoBehaviour
+public class Tile : MonoBehaviour, IPoolObject
 {
     public TileEntity entity;
     private bool destroying;
@@ -16,23 +16,29 @@ public class Tile : MonoBehaviour
     public GameObject yWall;
     public GameObject cWall;
     public GameObject tree;
+    public Vector2 placement;
+    public House house;
+    public bool verbose;
 
     public void Deactivate()
     {
-        xWall.SetActive(false);
-        yWall.SetActive(false);
-        cWall.SetActive(false);
-        tree.SetActive(false);
+        if(tree && xWall && yWall && cWall)
+        {
+            xWall.SetActive(false);
+            yWall.SetActive(false);
+            cWall.SetActive(false);
+            tree.SetActive(false);
+        }
     }
 
-    public Vector2 placement;
-    void Start()
+    public void PoolStart()
     {
-
+        FixEdges();
     }
 
     void FixedUpdate()
     {
+        
         if (!destroying)
         {
             float lastdist = Mathf.Infinity;
@@ -47,23 +53,17 @@ public class Tile : MonoBehaviour
                 }
             }
             entity = lastEntity;
-            if (transform.position.y > heightTarget)
+            if(lerpValue < 1)
             {
-                transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y, heightTarget, lerpValue), transform.position.z);
                 lerpValue += Time.deltaTime;
+                transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y, 0,lerpValue), transform.position.z);
             }
-            if (Vector3.Distance(transform.position, entity.gameObject.transform.position) > entity.dissolveRange + 1)
+            
+            if (Vector2.Distance(new Vector2(transform.position.x, transform.position.z), new Vector2(entity.gameObject.transform.position.x, entity.gameObject.transform.position.z)) > entity.dissolveRange + 1)
             {
                 lerpValue = 0;
                 destroying = true;
-                if(keepTiles)
-                {
-                    DestroyImmediate(this);
-                }
-                else
-                {
-                    StartCoroutine(DestroyTile());
-                }
+                StartCoroutine(DestroyTile());
             }
         }
     }
@@ -72,7 +72,7 @@ public class Tile : MonoBehaviour
     {
         if(transform.position.y <= 2.5f+heightTarget)
         {
-            transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y, 3+heightTarget, lerpValue), transform.position.z);
+            transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y, 3, lerpValue), transform.position.z);
             lerpValue += Time.deltaTime;
         }
         else
@@ -80,11 +80,32 @@ public class Tile : MonoBehaviour
             lerpValue = 0;
             ObjectPooling.objectPool.poolDictionary[type].Enqueue(gameObject);
             destroying = false;
-            CreateTiles.tilePlacement[Mathf.FloorToInt(placement.x), Mathf.FloorToInt(placement.y)] = false;
+            if(type == PoolType.Normal)
+            {
+                CreateTiles.tilePlacement[Mathf.FloorToInt(placement.x), Mathf.FloorToInt(placement.y)] = false;
+            }
+            else if(type == PoolType.House)
+            {
+                house.generated = false;
+            }
             Deactivate();
             gameObject.SetActive(false);
         }
         yield return new WaitForEndOfFrame();
         StartCoroutine(DestroyTile());
+    }
+
+    void FixEdges()
+    {
+        Mesh mesh = GetComponent<MeshFilter>().mesh;
+        Vector3[] vertices = mesh.vertices;
+        for (int z = 0; z < vertices.Length; z++)
+        {
+            float height = Mathf.Exp(Mathf.PerlinNoise((transform.position.x + 500 + vertices[z].x) * 0.01f, (transform.position.z + 500 + vertices[z].z) * 0.01f) * 6) * 2;
+            vertices[z] = new Vector3(vertices[z].x, height + vertices[z].y, vertices[z].z);
+        }
+        mesh.vertices = vertices;
+        mesh.RecalculateBounds();
+        GetComponent<MeshCollider>().sharedMesh = mesh;
     }
 }

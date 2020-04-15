@@ -19,9 +19,25 @@ public class DiskSampling : MonoBehaviour
 
     public GameObject cube;
 
-    private void Start()
+    public static List<List<Vector2>> CleanDiskSampling(Vector2[,] grid)
     {
-       
+        List<List<Vector2>> cityPoints = new List<List<Vector2>>();
+        for (int j = 0; j < grid.GetLength(0); j++)
+        {
+            List<Vector2> newList = new List<Vector2>();
+            for (int i = 0; i < grid.GetLength(1); i++)
+            {
+                if (grid[i, j].x != Mathf.NegativeInfinity && grid[i, j].y != Mathf.NegativeInfinity)
+                {
+                    newList.Add(grid[i, j]);
+                }
+            }
+            if (newList.Count != 0)
+            {
+                cityPoints.Add(newList);
+            }
+        }
+        return cityPoints;
     }
 
     static void InsertPoint(Vector2 point)

@@ -15,20 +15,19 @@ public class ExportTileMap : MonoBehaviour
     public static List<City> cities;
     public List<string> cityNames;
     
-
-    private void Awake()
+    void Awake()
     {
         randomVariation = UnityEngine.Random.Range(-1000000, 1000000);
         grey = Color.grey;
         cities = new List<City>();
-    }
-    void Start()
-    {
+
         Texture2D tileMap = CreateTileMap(mapSize, mapSize);
 
-        tileMap = AddCitiesToMap(tileMap, sizeOfCity, Color.green, Color.magenta);
+        //tileMap = AddCitiesToMap(tileMap, sizeOfCity, Color.green, Color.magenta);
 
-        tileMap = AddCitiesToMap(tileMap, sizeOfCity-2, Color.yellow, Color.black);
+        //tileMap = AddCitiesToMap(tileMap, sizeOfCity-2, Color.yellow, Color.black);
+
+        //tileMap = ForceAddCityToMiddle(tileMap, sizeOfCity);
 
         gameMap = tileMap;
 
@@ -49,7 +48,7 @@ public class ExportTileMap : MonoBehaviour
         {
             for (int j = 0; j < ySize; j++)
             {
-                float treeGeneration = Mathf.PerlinNoise((i + randomVariation) * 0.1f, (j + randomVariation) * 0.1f);
+                float treeGeneration = Mathf.PerlinNoise((i + randomVariation) * 0.03f, (j + randomVariation) * 0.03f);
                 float height = Mathf.PerlinNoise(i * 0.01f, j * 0.01f);
                 Color c = Color.black;
 
@@ -121,6 +120,7 @@ public class ExportTileMap : MonoBehaviour
                     city.xLocation = (x - 500) + citySize / 2;
                     city.yLocation = (y - 500) + citySize / 2;
                     city.name = GenerateCityName();
+                    city.size = citySize;
                     cities.Add(city);
                     for (int i = 0; i < citySize; i++)
                     {
@@ -150,6 +150,39 @@ public class ExportTileMap : MonoBehaviour
         return map;
     }
 
+
+    Texture2D ForceAddCityToMiddle(Texture2D map, int citySize)
+    {
+        citySize /= 4;
+        for (int i = 0; i < citySize; i++)
+        {
+            for (int j = 0; j < citySize; j++)
+            {
+                map.SetPixel(500 + i, 500 + j, Color.magenta);
+                if (i == 0 || i + 1 == citySize)
+                {
+                    map.SetPixel(500 + i, 500 + j, Color.red);
+                }
+                if (j == 0 || j + 1 == citySize)
+                {
+                    map.SetPixel(500 + i, 500 + j, new Color(0.8f, 0.8f, 0.8f));
+                }
+                if ((i == 0 && j == 0) || (i + 1 == citySize && j == 0) || (i == 0 && j + 1 == citySize) || (i + 1 == citySize && j + 1 == citySize))
+                {
+                    map.SetPixel(500 + i, 500 + j, grey);
+                }
+            }
+        }
+        City city = new City();
+        city.xLocation = (500) + citySize / 2;
+        city.yLocation = (500) + citySize / 2;
+        city.name = GenerateCityName();
+        city.size = citySize;
+        cities.Add(city);
+        
+        return map;
+    }
+
     string GenerateCityName()
     {
         int randomCityIndex = UnityEngine.Random.Range(0, cityNames.Count - 1);
@@ -164,17 +197,25 @@ public class ExportTileMap : MonoBehaviour
     /// <param name="map"> The tilemap to export </param>
     void SaveTextureToFile(Texture2D map)
     {
-        //File.WriteAllBytes(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\tilemap.png", map.EncodeToPNG());
+        File.WriteAllBytes(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\tilemap.png", map.EncodeToPNG());
     }
 
 }
 
+[System.Serializable]
 public class City
 {
     public string name;
     public CityType type;
     public int xLocation;
     public int yLocation;
+    public int size;
+    public List<House> houses;
+
+    public City()
+    {
+        houses = new List<House>();
+    }
 }
 
 
