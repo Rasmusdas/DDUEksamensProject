@@ -28,10 +28,9 @@ public class NormalVector : MonoBehaviour
         mesh.RecalculateNormals();
         mesh.RecalculateTangents();
         mesh.RecalculateBounds();
-        Vector3 normal = Vector3.Cross(Vector3.Scale(transform.localScale, vertices[3] + vertices[2]), Vector3.Scale(transform.localScale, vertices[4] + vertices[2]));
-        Instantiate(point, Vector3.Scale(transform.localScale, mesh.bounds.center), Quaternion.identity,null);
+        Vector3 normal = Vector3.Cross(Vector3.Scale(transform.localScale, vertices[2] - vertices[3]), Vector3.Scale(transform.localScale, vertices[2] - vertices[4]));
+        Instantiate(point, Vector3.Scale(transform.localScale, mesh.bounds.center), Quaternion.identity, null);
         Debug.DrawLine(normal + Vector3.Scale(transform.localScale, mesh.bounds.center), Vector3.Scale(transform.localScale, mesh.bounds.center), Color.blue, 100);
-
     }
 
     // Update is called once per frame

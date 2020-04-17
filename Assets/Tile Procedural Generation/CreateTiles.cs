@@ -145,9 +145,11 @@ public class CreateTiles : MonoBehaviour
                         Tile tile = newTile.GetComponent<Tile>();
                         tile.entity = tE;
                         tile.placement = tilePlace;
+                       
                         if (pixelColor == Color.cyan)
                         {
                             tile.tree.SetActive(true);
+                            Debug.Log(pixelColor);
                         }
                         if (pixelColor == Color.red)
                         {

@@ -13,8 +13,10 @@ public class ExportTileMap : MonoBehaviour
     public static Texture2D gameMap;
     public static Color grey;
     public static List<City> cities;
-    public List<string> cityNames;
-    
+    public List<string> startCityNames;
+    public List<string> middleCityNames;
+    public List<string> endCityNames;
+
     void Awake()
     {
         randomVariation = UnityEngine.Random.Range(-1000000, 1000000);
@@ -23,15 +25,15 @@ public class ExportTileMap : MonoBehaviour
 
         Texture2D tileMap = CreateTileMap(mapSize, mapSize);
 
-        //tileMap = AddCitiesToMap(tileMap, sizeOfCity, Color.green, Color.magenta);
+        tileMap = AddCitiesToMap(tileMap, sizeOfCity, Color.green, Color.magenta);
 
-        //tileMap = AddCitiesToMap(tileMap, sizeOfCity-2, Color.yellow, Color.black);
+        tileMap = AddCitiesToMap(tileMap, sizeOfCity-2, Color.yellow, Color.black);
 
-        //tileMap = ForceAddCityToMiddle(tileMap, sizeOfCity);
+        tileMap = ForceAddCityToMiddle(tileMap, sizeOfCity);
 
         gameMap = tileMap;
 
-        SaveTextureToFile(tileMap);
+        //SaveTextureToFile(tileMap);
     }
 
 
@@ -185,9 +187,9 @@ public class ExportTileMap : MonoBehaviour
 
     string GenerateCityName()
     {
-        int randomCityIndex = UnityEngine.Random.Range(0, cityNames.Count - 1);
-        string name = cityNames[UnityEngine.Random.Range(0, cityNames.Count - 1)];
-        cityNames.RemoveAt(randomCityIndex);
+        string name = "";
+        name += startCityNames[UnityEngine.Random.Range(0, startCityNames.Count - 1)];
+        name += middleCityNames[UnityEngine.Random.Range(0, startCityNames.Count - 1)];
         return name;
     }
 
