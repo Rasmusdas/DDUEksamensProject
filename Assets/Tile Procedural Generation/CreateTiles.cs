@@ -149,7 +149,6 @@ public class CreateTiles : MonoBehaviour
                         if (pixelColor == Color.cyan)
                         {
                             tile.tree.SetActive(true);
-                            Debug.Log(pixelColor);
                         }
                         if (pixelColor == Color.red)
                         {

@@ -11,7 +11,6 @@ public class CreateCities : MonoBehaviour
     {
         foreach(City city in ExportTileMap.cities)
         {
-            Debug.Log(city.size);
             int citySizeModify = -2;
             DiskSampling.GenerateDiskSamples(Mathf.Sqrt(city.size-3), 15, city.size + citySizeModify, city.size + citySizeModify, out Vector2[,] grid);
             List<List<Vector2>> housePositions = DiskSampling.CleanDiskSampling(grid);
@@ -49,7 +48,6 @@ public class CreateCities : MonoBehaviour
                 GameObject hus = ObjectPooling.objectPool.InstantiateFromPool(PoolType.House,new Vector3(h.position.x,3,h.position.y));
                 hus.transform.Rotate(0,Random.Range(0, 4) * 90,0);
                 hus.GetComponent<Tile>().house = h;
-                hus.GetComponent<Tile>().heightTarget = 1.15f;
                 hus.GetComponent<Tile>().house.generated = true;
             }
         }

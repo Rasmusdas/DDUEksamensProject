@@ -44,8 +44,7 @@ public class Tile : MonoBehaviour, IPoolObject
         else
         {
             normalVector = Physics.Raycast(transform.position, transform.up, out RaycastHit hit, 100f) ? GetNormalVector(hit.transform.GetComponent<MeshFilter>().mesh) : GetNormalVector(GetComponent<MeshFilter>().mesh);
-            FixEdges();
-            FixRotation(transform, normalVector);
+            FixBuildings(transform, normalVector, hit.point);
         }
         if(tree && xWall && yWall && cWall)
         {
@@ -77,7 +76,7 @@ public class Tile : MonoBehaviour, IPoolObject
             if(lerpValue < 1)
             {
                 lerpValue += Time.deltaTime;
-                transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y, 0,lerpValue), transform.position.z);
+                transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y, 0+heightTarget,lerpValue), transform.position.z);
             }
             
             if (Vector2.Distance(new Vector2(transform.position.x, transform.position.z), new Vector2(entity.gameObject.transform.position.x, entity.gameObject.transform.position.z)) > entity.dissolveRange + 1)
@@ -132,7 +131,7 @@ public class Tile : MonoBehaviour, IPoolObject
 
     void FixRotation(Transform trans, Vector3 normalVector, bool affectChildObjects = false)
     {
-        if(affectChildObjects)
+        if (affectChildObjects)
         {
             for (int i = 0; i < trans.transform.childCount; i++)
             {
@@ -146,6 +145,13 @@ public class Tile : MonoBehaviour, IPoolObject
             trans.localPosition = mesh.bounds.center;
             trans.up = normalVector.normalized;
         }
+    }
+
+    void FixBuildings(Transform trans, Vector3 normalVector, Vector3 offset)
+    {
+        mesh = GetComponent<MeshFilter>().mesh;
+        heightTarget = Mathf.Exp(Mathf.PerlinNoise((trans.position.x + 500) * 0.01f, (trans.position.z + 500) * 0.01f) * 3) * 2;
+        trans.up = normalVector.normalized;
     }
 
     Vector3 GetNormalVector()
