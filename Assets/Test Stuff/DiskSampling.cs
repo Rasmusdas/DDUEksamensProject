@@ -17,8 +17,15 @@ public class DiskSampling : MonoBehaviour
     public static List<Vector2> listOfActivePoints = new List<Vector2>();
     static Vector2[,] grid;
 
+    public GameObject pointObject;
+
     public GameObject cube;
 
+    private void Start()
+    {
+        StartCoroutine(VisualDiskSampling(10,10,100,100));
+    }
+    
     public static List<List<Vector2>> CleanDiskSampling(Vector2[,] grid)
     {
         List<List<Vector2>> cityPoints = new List<List<Vector2>>();
@@ -55,26 +62,26 @@ public class DiskSampling : MonoBehaviour
         {
             for (int j = 0; j < grid.GetLength(1); j++)
             {
-                grid[i, j] = new Vector2(Mathf.NegativeInfinity,Mathf.NegativeInfinity);
+                grid[i, j] = new Vector2(Mathf.NegativeInfinity, Mathf.NegativeInfinity);
             }
         }
-        InsertPoint(new Vector2(width/2,height/2));
+        InsertPoint(new Vector2(width / 2, height / 2));
         List<Vector2> points = new List<Vector2>();
-        
+
         listOfActivePoints.Add(new Vector2(width / 2, height / 2));
         while (listOfActivePoints.Count > 0)
         {
             bool valid = false;
-            int randomIndex = Random.Range(0,listOfActivePoints.Count);
+            int randomIndex = Random.Range(0, listOfActivePoints.Count);
             for (int i = 0; i < attempts; i++)
             {
-                float angle = Random.Range(0, Mathf.PI*2);
+                float angle = Random.Range(0, Mathf.PI * 2);
                 float newRadius = Random.Range(radius, radius * 2);
                 float pointX = listOfActivePoints[randomIndex].x + newRadius * Mathf.Cos(angle);
                 float pointY = listOfActivePoints[randomIndex].y + newRadius * Mathf.Sin(angle);
-                Vector2 point = new Vector2(pointX,pointY);
+                Vector2 point = new Vector2(pointX, pointY);
 
-                if(!CheckPoint(point,radius))
+                if (!CheckPoint(point, radius))
                 {
                     continue;
                 }
@@ -85,14 +92,66 @@ public class DiskSampling : MonoBehaviour
                 valid = true;
                 break;
             }
-            
-            if(!valid)
+
+            if (!valid)
             {
                 listOfActivePoints.RemoveAt(randomIndex);
             }
         }
         outGrid = grid;
         return points;
+    }
+
+    public IEnumerator VisualDiskSampling(float radius, int attempts, int w, int h)
+    {
+        width = w;
+        height = h;
+        cellSize = Mathf.FloorToInt(radius / Mathf.Sqrt(DIMS));
+        grid = new Vector2[Mathf.CeilToInt(width / cellSize) + 1, Mathf.CeilToInt(height / cellSize) + 1];
+        for (int i = 0; i < grid.GetLength(0); i++)
+        {
+            for (int j = 0; j < grid.GetLength(1); j++)
+            {
+                grid[i, j] = new Vector2(Mathf.NegativeInfinity, Mathf.NegativeInfinity);
+            }
+        }
+        InsertPoint(new Vector2(width / 2, height / 2));
+        List<Vector2> points = new List<Vector2>();
+
+        listOfActivePoints.Add(new Vector2(width / 2, height / 2));
+        while (listOfActivePoints.Count > 0)
+        {
+            bool valid = false;
+            int randomIndex = Random.Range(0, listOfActivePoints.Count);
+            for (int i = 0; i < attempts; i++)
+            {
+                float angle = Random.Range(0, Mathf.PI * 2);
+                float newRadius = Random.Range(radius, radius * 2);
+                float pointX = listOfActivePoints[randomIndex].x + newRadius * Mathf.Cos(angle);
+                float pointY = listOfActivePoints[randomIndex].y + newRadius * Mathf.Sin(angle);
+                Vector2 point = new Vector2(pointX, pointY);
+                GameObject pointyBoi = Instantiate(pointObject,point,Quaternion.identity,null);
+                Debug.DrawLine(new Vector2(listOfActivePoints[randomIndex].x, listOfActivePoints[randomIndex].y),point, Color.red,0.1f);
+                yield return new WaitForSeconds(0.1f);
+                if (!CheckPoint(point, radius))
+                {
+                    Destroy(pointyBoi);
+                    continue;
+                }
+                pointyBoi.GetComponent<Renderer>().material.color = Color.green;
+                listOfActivePoints.Add(point);
+                points.Add(point);
+                InsertPoint(point);
+                valid = true;
+                break;
+            }
+
+            if (!valid)
+            {
+                listOfActivePoints.RemoveAt(randomIndex);
+            }
+        }
+        yield return new WaitForFixedUpdate();
     }
 
     static bool CheckPoint(Vector2 point, float radius)

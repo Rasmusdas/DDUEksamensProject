@@ -75,7 +75,7 @@ public class Tile : MonoBehaviour, IPoolObject
             entity = lastEntity;
             if(lerpValue < 1)
             {
-                lerpValue += Time.deltaTime;
+                lerpValue += Time.fixedDeltaTime;
                 transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y, 0+heightTarget,lerpValue), transform.position.z);
             }
             
@@ -92,7 +92,7 @@ public class Tile : MonoBehaviour, IPoolObject
     {
         if(transform.position.y <= 2.5f+heightTarget)
         {
-            transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y, 3, lerpValue), transform.position.z);
+            transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y, 3+heightTarget, lerpValue), transform.position.z);
             lerpValue += Time.deltaTime;
         }
         else
@@ -104,7 +104,7 @@ public class Tile : MonoBehaviour, IPoolObject
             {
                 CreateTiles.tilePlacement[Mathf.FloorToInt(placement.x), Mathf.FloorToInt(placement.y)] = false;
             }
-            else if(type == PoolType.House)
+            if (house != null)
             {
                 house.generated = false;
             }
@@ -149,8 +149,8 @@ public class Tile : MonoBehaviour, IPoolObject
 
     void FixBuildings(Transform trans, Vector3 normalVector, Vector3 offset)
     {
-        mesh = GetComponent<MeshFilter>().mesh;
-        heightTarget = Mathf.Exp(Mathf.PerlinNoise((trans.position.x + 500) * 0.01f, (trans.position.z + 500) * 0.01f) * 3) * 2;
+        heightTarget = (Mathf.Exp(Mathf.PerlinNoise((trans.position.x + 500) * 0.01f, (trans.position.z + 500) * 0.01f) * 3) * 2)+0.3f;
+        trans.position = Vector3.Scale(offset,new Vector3(1,0,1));
         trans.up = normalVector.normalized;
     }
 

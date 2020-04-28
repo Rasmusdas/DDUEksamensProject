@@ -16,6 +16,7 @@ public class ExportTileMap : MonoBehaviour
     public List<string> startCityNames;
     public List<string> middleCityNames;
     public List<string> endCityNames;
+    public float distanceBetween;
 
     void Awake()
     {
@@ -25,15 +26,15 @@ public class ExportTileMap : MonoBehaviour
 
         Texture2D tileMap = CreateTileMap(mapSize, mapSize);
 
-        tileMap = AddCitiesToMap(tileMap, sizeOfCity, Color.green, Color.magenta);
+        //tileMap = AddCitiesToMap(tileMap, sizeOfCity, Color.green, Color.magenta);
 
-        tileMap = AddCitiesToMap(tileMap, sizeOfCity-2, Color.yellow, Color.black);
+        //tileMap = AddCitiesToMap(tileMap, sizeOfCity-2, Color.yellow, Color.black);
 
-        tileMap = ForceAddCityToMiddle(tileMap, sizeOfCity);
+        //tileMap = ForceAddCityToMiddle(tileMap, sizeOfCity);
 
         gameMap = tileMap;
 
-        //SaveTextureToFile(tileMap);
+        SaveTextureToFile(tileMap);
     }
 
 
@@ -62,9 +63,9 @@ public class ExportTileMap : MonoBehaviour
                 {
                     c = Color.grey;
                 }
-                else if (height > 0.5f && treeGeneration > 0.7f)
+                else if (height > 0.65f)
                 {
-                    c = Color.cyan;
+                    c = new Color(0.2f,0.4f,0.2f);
                 }
                 else if (height > 0.5f)
                 {
@@ -78,6 +79,7 @@ public class ExportTileMap : MonoBehaviour
                 {
                     c = Color.blue;
                 }
+                
                 texture.SetPixel(i, j, c);
             }
         }
@@ -101,25 +103,36 @@ public class ExportTileMap : MonoBehaviour
             for (int y = 0; y < map.width - citySize; y++)
             {
                 bool generateCity = true;
-                for (int i = 0; i < citySize; i++)
+                foreach (var v in cities)
                 {
-                    for (int j = 0; j < citySize; j++)
+                    if (Mathf.Sqrt(Mathf.Pow(v.xLocation - x, 2) + Mathf.Pow(v.yLocation - y, 2)) < distanceBetween)
                     {
-                        if(map.GetPixel(x+i,y+j) != landScapeColor)
-                        {
-                            generateCity = false;
-                            break;
-                        }
-                    }
-                    if(!generateCity)
-                    {
+                        generateCity = false;
                         break;
                     }
                 }
                 if(generateCity)
                 {
+                    for (int i = 0; i < citySize; i++)
+                    {
+                        for (int j = 0; j < citySize; j++)
+                        {
+                            if (map.GetPixel(x + i, y + j) != landScapeColor)
+                            {
+                                generateCity = false;
+                                break;
+                            }
+                        }
+                        if (!generateCity)
+                        {
+                            break;
+                        }
+                    }
+                }
+                if(generateCity)
+                {
                     City city = new City();
-                    city.xLocation = (x - 500) + citySize / 2;
+                    city.xLocation = (x - 500) + citySize/2;
                     city.yLocation = (y - 500) + citySize / 2;
                     city.name = GenerateCityName();
                     city.size = citySize;
@@ -143,6 +156,9 @@ public class ExportTileMap : MonoBehaviour
                             }
                         }
                     }
+                    map.Apply();
+
+                    return map;
                 }
             }
         }
@@ -176,8 +192,8 @@ public class ExportTileMap : MonoBehaviour
             }
         }
         City city = new City();
-        city.xLocation = (500) + citySize / 2;
-        city.yLocation = (500) + citySize / 2;
+        city.xLocation = citySize / 2;
+        city.yLocation = citySize / 2;
         city.name = GenerateCityName();
         city.size = citySize;
         cities.Add(city);
@@ -209,8 +225,8 @@ public class City
 {
     public string name;
     public CityType type;
-    public int xLocation;
-    public int yLocation;
+    public float xLocation;
+    public float yLocation;
     public int size;
     public List<House> houses;
 

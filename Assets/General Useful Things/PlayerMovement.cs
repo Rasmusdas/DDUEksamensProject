@@ -32,8 +32,8 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         // Player Movement
-        float x = Input.GetAxis("Horizontal") * movementSpeed * Time.deltaTime;
-        float y = Input.GetAxis("Vertical") * movementSpeed * Time.deltaTime;
+        float x = Input.GetAxis("Horizontal") * movementSpeed * Time.fixedDeltaTime;
+        float y = Input.GetAxis("Vertical") * movementSpeed * Time.fixedDeltaTime;
         Vector3 movementVector = transform.forward * y + transform.right*x;
         rb.velocity = new Vector3(movementVector.x,rb.velocity.y,movementVector.z);
 

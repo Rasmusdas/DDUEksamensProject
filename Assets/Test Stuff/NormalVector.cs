@@ -9,6 +9,7 @@ public class NormalVector : MonoBehaviour
     public int pointIndex;
     public Vector3[] vertices;
     public Mesh mesh;
+    public GameObject stick;
     void Start()
     {
         mesh = GetComponent<MeshFilter>().mesh;
@@ -17,25 +18,25 @@ public class NormalVector : MonoBehaviour
         {
             if(vertices[i].z != vertices[i].x)
             {
-                vertices[i] += Vector3.up;
+                vertices[i] += Vector3.up/2;
             }
             if(vertices[i].z == vertices[i].x && vertices[i].z > 0)
             {
-                vertices[i] += Vector3.up*3;
+                vertices[i] += Vector3.up;
             }
         }
         mesh.vertices = vertices;
         mesh.RecalculateNormals();
         mesh.RecalculateTangents();
         mesh.RecalculateBounds();
-        Vector3 normal = Vector3.Cross(Vector3.Scale(transform.localScale, vertices[2] - vertices[3]), Vector3.Scale(transform.localScale, vertices[2] - vertices[4]));
-        Instantiate(point, Vector3.Scale(transform.localScale, mesh.bounds.center), Quaternion.identity, null);
-        Debug.DrawLine(normal + Vector3.Scale(transform.localScale, mesh.bounds.center), Vector3.Scale(transform.localScale, mesh.bounds.center), Color.blue, 100);
+        Vector3 normal = GetNormalVector(mesh);
+        Debug.DrawLine(normal + mesh.bounds.center, mesh.bounds.center, Color.blue, 100);
+        Instantiate(stick, mesh.bounds.center, Quaternion.identity, null).transform.up = normal.normalized;
     }
-
-    // Update is called once per frame
-    void Update()
+    Vector3 GetNormalVector(Mesh mesh)
     {
-        
+        Vector3[] vertices = mesh.vertices;
+        Vector3 normal = Vector3.Cross(vertices[2] - vertices[4], vertices[2] - vertices[3]);
+        return normal;
     }
 }

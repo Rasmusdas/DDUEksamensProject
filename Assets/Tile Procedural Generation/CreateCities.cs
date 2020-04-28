@@ -7,18 +7,20 @@ public class CreateCities : MonoBehaviour
 {
     public House house;
     public City cy;
+    public List<City> cityrino;
     void Start()
     {
-        foreach(City city in ExportTileMap.cities)
+        cityrino = ExportTileMap.cities;
+        foreach (City city in ExportTileMap.cities)
         {
-            int citySizeModify = -2;
-            DiskSampling.GenerateDiskSamples(Mathf.Sqrt(city.size-3), 15, city.size + citySizeModify, city.size + citySizeModify, out Vector2[,] grid);
+            int citySizeModify = 0;
+            DiskSampling.GenerateDiskSamples(3, 5, city.size + citySizeModify, city.size + citySizeModify, out Vector2[,] grid);
             List<List<Vector2>> housePositions = DiskSampling.CleanDiskSampling(grid);
             foreach(List<Vector2> list in housePositions)
             {
                 foreach(Vector2 pos in list)
                 {
-                    city.houses.Add(new House(house.housePrefab, new Vector3(pos.x + city.xLocation - 500 - (city.size + citySizeModify) / 2, pos.y + city.yLocation - 500 - (city.size + citySizeModify) / 2), house.type, city));
+                    city.houses.Add(new House(house.housePrefab, new Vector3(pos.x - city.size / 2, pos.y-city.size/2), house.type, city));
                 }
             }
         }
@@ -30,25 +32,23 @@ public class CreateCities : MonoBehaviour
        {
             foreach(City c in ExportTileMap.cities)
             {
-                cy = c;
-                if(Vector3.Distance(ent.gameObject.transform.position,new Vector3(c.xLocation-500,c.yLocation-500)) < ent.dissolveRange)
-                {
-                    GenerateCity(c);
-                }
+                GenerateCity(c, ent);
             }
         }
     }
 
-    void GenerateCity(City city)
+    void GenerateCity(City city, TileEntity ent)
     {
         foreach(House h in city.houses)
         {
             if(!h.generated)
             {
-                GameObject hus = ObjectPooling.objectPool.InstantiateFromPool(PoolType.House,new Vector3(h.position.x,3,h.position.y));
-                hus.transform.Rotate(0,Random.Range(0, 4) * 90,0);
-                hus.GetComponent<Tile>().house = h;
-                hus.GetComponent<Tile>().house.generated = true;
+                if (Vector3.Distance(new Vector3(ent.gameObject.transform.position.x, 0, ent.gameObject.transform.position.z), new Vector3(city.xLocation+h.position.x, 0, city.yLocation + h.position.y)) < ent.dissolveRange-1)
+                {
+                    GameObject hus = ObjectPooling.objectPool.InstantiateFromPool(PoolType.House, new Vector3(city.xLocation + h.position.x, 3, city.yLocation + h.position.y));
+                    hus.GetComponent<Tile>().house = h;
+                    hus.GetComponent<Tile>().house.generated = true;
+                }
             }
         }
     }
