@@ -307,11 +307,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nextPoint: 0
-  point: {fileID: 0}
+  point: {fileID: 6473335245942455998, guid: 265519ffbd070834e8731fe33adb74ae, type: 3}
   pointIndex: 0
   vertices: []
   mesh: {fileID: 0}
-  stick: {fileID: 8344087154397258666, guid: b46180e31cd0ace42a49fc2ed250dbe0, type: 3}
+  stick: {fileID: 1860922227249888389, guid: bffcc0f00db1e2841b7552a6177d5a91, type: 3}
 --- !u!1 &1800538599
 GameObject:
   m_ObjectHideFlags: 0
