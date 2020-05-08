@@ -18,12 +18,19 @@ public class CreateTiles : MonoBehaviour
     public static List<GameObject> generatedTiles = new List<GameObject>();
     public int mapSize;
     public static bool[,] tilePlacement;
+    public List<Pair> pairList = new List<Pair>();
+
+    Dictionary<Color, Material> mats = new Dictionary<Color, Material>();
     
 
     private void Awake()
     {
         seed = Random.Range(-1000000,1000000);     
         tilePlacement = new bool[1000, 1000];
+        foreach(var v in pairList)
+        {
+            mats.Add(v.col,v.mat);
+        }
     }
 
     private void Start()
@@ -140,7 +147,15 @@ public class CreateTiles : MonoBehaviour
                         //Instantiate(tile, new Vector3(i + Mathf.FloorToInt(tE.gameObject.transform.position.x), 3 + height, j + Mathf.FloorToInt(tE.gameObject.transform.position.z)), Quaternion.identity, null);
                         Texture2D gameMap = ExportTileMap.gameMap;
                         Color pixelColor = gameMap.GetPixel(Mathf.FloorToInt(tE.gameObject.transform.position.x) + i + mapSize / 2, Mathf.FloorToInt(tE.gameObject.transform.position.z) + j + mapSize / 2);
-                        newTile.GetComponent<MeshRenderer>().material.color = pixelColor;
+                        Debug.Log(pixelColor);
+                        if(mats.ContainsKey(pixelColor))
+                        {
+                            newTile.GetComponent<MeshRenderer>().material = mats[pixelColor];
+                        }
+                        else
+                        {
+                            newTile.GetComponent<MeshRenderer>().material.color = pixelColor;
+                        }
                         
                         Tile tile = newTile.GetComponent<Tile>();
                         tile.entity = tE;
@@ -189,4 +204,17 @@ public class TileEntity
     public int xSize;
     public int ySize;
     public float dissolveRange;
+}
+
+[System.Serializable]
+public class Pair
+{
+    public Material mat;
+    public Color col;
+
+    public Pair(Material mat, Color col)
+    {
+        this.mat = mat;
+        this.col = col;
+    }
 }

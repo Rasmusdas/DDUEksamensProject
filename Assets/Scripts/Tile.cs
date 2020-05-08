@@ -45,9 +45,6 @@ public class Tile : MonoBehaviour, IPoolObject
         if (tree && xWall && yWall && cWall && !name.Contains("Building"))
         {
             normalVector = GetNormalVector();
-            FixRotation(xWall.transform, normalVector);
-            FixRotation(yWall.transform, normalVector);
-            FixRotation(cWall.transform, normalVector);
             FixRotation(tree.transform, normalVector, true);
         }
         
@@ -132,10 +129,15 @@ public class Tile : MonoBehaviour, IPoolObject
         {
             for (int i = 0; i < trans.transform.childCount; i++)
             {
-                Transform treeChild = trans.transform.GetChild(i);
-                treeChild.localPosition = mesh.bounds.center;
-                treeChild.up = normalVector.normalized;
+                trans.transform.GetChild(i).gameObject.SetActive(false);
             }
+
+            Transform treeChild = trans.transform.GetChild(Random.Range(0,trans.transform.childCount));
+            treeChild.gameObject.SetActive(true);
+            float x = Random.Range(-0.5f, 0.5f);
+            float y = Random.Range(-0.5f, 0.5f);
+            treeChild.localPosition = mesh.bounds.center + new Vector3(x, (Mathf.Exp(Mathf.PerlinNoise((trans.position.x + x + 500) * 0.01f, (trans.position.z + y + 500) * 0.01f) * 3) * 2) - (Mathf.Exp(Mathf.PerlinNoise((trans.position.x + 500) * 0.01f, (trans.position.z + 500) * 0.01f) * 3) * 2), y);
+            treeChild.up = normalVector.normalized;
         }
         else
         {

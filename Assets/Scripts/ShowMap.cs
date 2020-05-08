@@ -15,6 +15,7 @@ public class ShowMap : MonoBehaviour
     {
         StartCoroutine(Initialize());
         rectTrans = playerPin.GetComponent<RectTransform>();
+        map.gameObject.SetActive(false);
     }
 
     void Update()
