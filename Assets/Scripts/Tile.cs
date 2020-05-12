@@ -20,9 +20,18 @@ public class Tile : MonoBehaviour, IPoolObject
     public House house;
     public bool verbose;
 
+    public static Vector3[] defaultTile;
+
     public GameObject test;
     Mesh mesh;
-
+    public void Start()
+    {
+        if(name == "DefaultTile")
+        {
+            defaultTile = GetComponent<MeshFilter>().mesh.vertices;
+            DestroyImmediate(gameObject);
+        }
+    }
     public void Deactivate()
     {
         if(tree && xWall && yWall && cWall)
@@ -40,7 +49,6 @@ public class Tile : MonoBehaviour, IPoolObject
         if (!name.Contains("Building"))
         {
             FixEdges();
-            Debug.DrawLine(normalVector + new Vector3(transform.position.x, heightTarget + mesh.bounds.center.y, transform.position.z), new Vector3(transform.position.x, heightTarget + mesh.bounds.center.y, transform.position.z), Color.blue, 100);
         }
         if (tree && xWall && yWall && cWall && !name.Contains("Building"))
         {
@@ -112,6 +120,7 @@ public class Tile : MonoBehaviour, IPoolObject
     void FixEdges()
     {
         mesh = GetComponent<MeshFilter>().mesh;
+        Vector3[] defaultVertices = defaultTile;
         Vector3[] vertices = mesh.vertices;
         for (int z = 0; z < vertices.Length; z++)
         {
@@ -155,6 +164,7 @@ public class Tile : MonoBehaviour, IPoolObject
         }
         Vector3 normalVector = GetNormalVector(meshyboi);
         heightTarget = (Mathf.Exp(Mathf.PerlinNoise((trans.position.x + 500) * 0.01f, (trans.position.z + 500) * 0.01f) * 3) * 2);
+        trans.position += Vector3.up * heightTarget*1.5f;
         trans.up = normalVector.normalized;
         trans.Rotate(0, house.rotationAmount, 0);
     }

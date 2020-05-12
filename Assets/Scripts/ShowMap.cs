@@ -15,15 +15,10 @@ public class ShowMap : MonoBehaviour
     {
         StartCoroutine(Initialize());
         rectTrans = playerPin.GetComponent<RectTransform>();
-        map.gameObject.SetActive(false);
     }
 
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.M))
-        {
-            map.gameObject.SetActive(!map.gameObject.activeSelf);
-        }
         rectTrans.localPosition = new Vector2(player.transform.position.x, player.transform.position.z);
         rectTrans.localEulerAngles = player.transform.eulerAngles.y < 0 ?  new Vector3(0, 0, -player.transform.eulerAngles.y) : new Vector3(0, 0, -player.transform.eulerAngles.y + 360);
     }
@@ -43,6 +38,7 @@ public class ShowMap : MonoBehaviour
                 rT.sizeDelta = new Vector2(500,250);
                 rT.localPosition = new Vector3(c.xLocation, c.yLocation, -1);
                 cityText.GetComponent<Text>().text = c.name;
+                c.text = cityText.GetComponent<Text>();
             }
         }
         else

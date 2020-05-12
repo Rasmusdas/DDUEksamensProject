@@ -4,39 +4,46 @@ using UnityEngine;
 
 public class Quest : MonoBehaviour
 {
-    public string QuestName { get; protected set; }
-    public int StatueFragmentReward { get; protected set; }
-    public City Destination { get; protected set; }
-
-    public GameObject questMarker;
-    protected GameObject map;
-
-    public Quest(string name, int fragmentAmount)
+    City destination;
+    public GameObject player;
+    public GameObject woohoo;
+    bool finished;
+    void Start()
     {
-        QuestName = name;
-        StatueFragmentReward = fragmentAmount;
+        destination = ExportTileMap.cities[Random.Range(0, ExportTileMap.cities.Count - 1)];
+        StartCoroutine(StartQuest());
+        woohoo.SetActive(false);
     }
 
-    public virtual void StartQuest()
+    void Update()
     {
-        
+        if (Vector3.Distance(new Vector3(player.transform.position.x, 0, player.transform.position.z), new Vector3(destination.xLocation, 0, destination.yLocation)) < 10)
+        {
+            StartCoroutine(Finished());
+        }
     }
 
-    public virtual void EndQuest()
+    IEnumerator Finished()
     {
-
+        if(!finished)
+        {
+            finished = true;
+            woohoo.SetActive(true);
+            yield return new WaitForSeconds(10);
+            woohoo.SetActive(false);
+            destination.text.color = Color.green;
+        }
     }
-    
-    public Quest MakeCopy()
+
+    IEnumerator StartQuest()
     {
-        Quest q = Instantiate(this);
-        q.QuestName = "owo";
-        return q;
+        while(destination.text == null)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+        destination.text.text = "Hamstervale";
+        destination.text.transform.position += Vector3.forward * 10;
+        destination.name = "Hamstervale";
+        destination.text.color = Color.red;
     }
-}
-
-
-public enum QuestType
-{
-    Fetch
 }

@@ -18,7 +18,7 @@ public class ExportTileMap : MonoBehaviour
     public List<string> endCityNames;
     public float distanceBetween;
 
-    void Awake()
+    void Start()
     {
         randomVariation = UnityEngine.Random.Range(-1000000, 1000000);
         grey = Color.grey;
@@ -26,7 +26,7 @@ public class ExportTileMap : MonoBehaviour
 
         Texture2D tileMap = CreateTileMap(mapSize, mapSize);
 
-        //tileMap = AddCitiesToMap(tileMap, sizeOfCity, Color.green, Color.magenta);
+        tileMap = AddCitiesToMap(tileMap, sizeOfCity, Color.green, Color.magenta);
 
         //tileMap = AddCitiesToMap(tileMap, sizeOfCity-2, Color.yellow, Color.black);
 
@@ -51,7 +51,6 @@ public class ExportTileMap : MonoBehaviour
         {
             for (int j = 0; j < ySize; j++)
             {
-                float treeGeneration = Mathf.PerlinNoise((i + randomVariation) * 0.03f, (j + randomVariation) * 0.03f);
                 float height = Mathf.PerlinNoise(i * 0.01f, j * 0.01f);
                 Color c = Color.black;
 
@@ -103,33 +102,33 @@ public class ExportTileMap : MonoBehaviour
             for (int y = 0; y < map.width - citySize; y++)
             {
                 bool generateCity = true;
-                foreach (var v in cities)
+                for (int i = 0; i < citySize; i++)
                 {
-                    if (Mathf.Sqrt(Mathf.Pow(v.xLocation - x, 2) + Mathf.Pow(v.yLocation - y, 2)) < distanceBetween)
+                    for (int j = 0; j < citySize; j++)
                     {
-                        generateCity = false;
+                        if (map.GetPixel(x + i, y + j) != landScapeColor)
+                        {
+                            generateCity = false;
+                            break;
+                        }
+                    }
+                    if (!generateCity)
+                    {
                         break;
                     }
                 }
-                if(generateCity)
+                if (generateCity)
                 {
-                    for (int i = 0; i < citySize; i++)
+                    foreach (var v in cities)
                     {
-                        for (int j = 0; j < citySize; j++)
+                        if (Mathf.Sqrt(Mathf.Pow(v.xLocation + 500 - x, 2) + Mathf.Pow(v.yLocation + 500 - y, 2)) < distanceBetween)
                         {
-                            if (map.GetPixel(x + i, y + j) != landScapeColor)
-                            {
-                                generateCity = false;
-                                break;
-                            }
-                        }
-                        if (!generateCity)
-                        {
+                            generateCity = false;
                             break;
                         }
                     }
                 }
-                if(generateCity)
+                if (generateCity)
                 {
                     City city = new City();
                     city.xLocation = (x - 500) + citySize/2;
@@ -148,7 +147,7 @@ public class ExportTileMap : MonoBehaviour
                             }
                             if(j == 0 || j + 1 == citySize)
                             {
-                                map.SetPixel(x + i, y + j, new Color(0.8f,0.8f,0.8f));
+                                map.SetPixel(x + i, y + j, new Color(0.7f,0.7f,0.7f));
                             }
                             if ((i == 0 && j == 0) || (i + 1 == citySize && j == 0) || (i == 0 && j + 1 == citySize) || (i + 1 == citySize && j + 1 == citySize))
                             {
@@ -157,8 +156,6 @@ public class ExportTileMap : MonoBehaviour
                         }
                     }
                     map.Apply();
-
-                    return map;
                 }
             }
         }
@@ -229,6 +226,7 @@ public class City
     public float yLocation;
     public int size;
     public List<House> houses;
+    public Text text;
 
     public City()
     {

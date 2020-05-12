@@ -26,15 +26,18 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        Cursor.lockState = CursorLockMode.Locked;
+        Time.timeScale = 1;
         
     }
 
-    void Update()
+    void FixedUpdate()
     {
         // Player Movement
-        float x = Input.GetAxis("Horizontal") * movementSpeed * Time.fixedDeltaTime;
-        float y = Input.GetAxis("Vertical") * movementSpeed * Time.fixedDeltaTime;
+        float x = Input.GetAxis("Horizontal") * Time.fixedDeltaTime;
+        float y = Input.GetAxis("Vertical") * Time.fixedDeltaTime;
         Vector3 movementVector = transform.forward * y + transform.right*x;
+        movementVector = movementVector * movementSpeed;
         rb.velocity = new Vector3(movementVector.x,rb.velocity.y,movementVector.z);
 
         // Camera Rotation

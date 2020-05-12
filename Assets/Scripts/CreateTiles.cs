@@ -20,21 +20,17 @@ public class CreateTiles : MonoBehaviour
     public static bool[,] tilePlacement;
     public List<Pair> pairList = new List<Pair>();
 
-    Dictionary<Color, Material> mats = new Dictionary<Color, Material>();
+    public static Dictionary<Color, Material> mats = new Dictionary<Color, Material>();
     
-
-    private void Awake()
-    {
-        seed = Random.Range(-1000000,1000000);     
-        tilePlacement = new bool[1000, 1000];
-        foreach(var v in pairList)
-        {
-            mats.Add(v.col,v.mat);
-        }
-    }
 
     private void Start()
     {
+        seed = Random.Range(-1000000, 1000000);
+        tilePlacement = new bool[1000, 1000];
+        foreach (var v in pairList)
+        {
+            mats.Add(v.col, v.mat);
+        }
         objectPools = ObjectPooling.objectPool;
         tileEntities = entities;
     }
@@ -147,14 +143,21 @@ public class CreateTiles : MonoBehaviour
                         //Instantiate(tile, new Vector3(i + Mathf.FloorToInt(tE.gameObject.transform.position.x), 3 + height, j + Mathf.FloorToInt(tE.gameObject.transform.position.z)), Quaternion.identity, null);
                         Texture2D gameMap = ExportTileMap.gameMap;
                         Color pixelColor = gameMap.GetPixel(Mathf.FloorToInt(tE.gameObject.transform.position.x) + i + mapSize / 2, Mathf.FloorToInt(tE.gameObject.transform.position.z) + j + mapSize / 2);
-                        Debug.Log(pixelColor);
+
+                        foreach(var v in pairList)
+                        {
+                            if(ColorCloseEnough(v.col, pixelColor))
+                            {
+                                pixelColor = v.col;
+                            }
+                        }
                         if(mats.ContainsKey(pixelColor))
                         {
                             newTile.GetComponent<MeshRenderer>().material = mats[pixelColor];
                         }
                         else
                         {
-                            newTile.GetComponent<MeshRenderer>().material.color = pixelColor;
+                            newTile.GetComponent<MeshRenderer>().material = pairList[0].mat;
                         }
                         
                         Tile tile = newTile.GetComponent<Tile>();
@@ -173,19 +176,15 @@ public class CreateTiles : MonoBehaviour
                         {
                             tile.xWall.SetActive(true);
                         }
-                        if (ColorCloseEnoughToGrey(pixelColor))
-                        {
-                            tile.cWall.SetActive(true);
-                        }
                     }
                 }
             }
         }
     }
 
-    public bool ColorCloseEnoughToGrey(Color c)
+    public bool ColorCloseEnough(Color c,Color b)
     {
-        if(c.r - 0.5f < 0.05f && c.g - 0.5f < 0.05f && c.b - 0.5f < 0.05f)
+        if(Mathf.Abs(c.r - b.r) < 0.03f && Mathf.Abs(c.g - b.g) < 0.03f && Mathf.Abs(c.b - b.b) < 0.03f)
         {
             return true;
         }

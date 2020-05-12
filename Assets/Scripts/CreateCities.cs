@@ -22,6 +22,7 @@ public class CreateCities : MonoBehaviour
             int citySizeModify = 0;
             DiskSampling.GenerateDiskSamples(3, 5, city.size + citySizeModify, city.size + citySizeModify, out Vector2[,] grid);
             List<List<Vector2>> housePositions = DiskSampling.CleanDiskSampling(grid);
+            bool hasChurch = false;
             foreach(List<Vector2> list in housePositions)
             {
                 foreach(Vector2 pos in list)
@@ -29,8 +30,9 @@ public class CreateCities : MonoBehaviour
                     int houseIndex = Random.Range(0, System.Enum.GetValues(typeof(HouseType)).Length);
                     House h = houseDic[(HouseType)houseIndex];
                     House house = new House(h.housePrefab, new Vector2(pos.x - city.size / 2, pos.y - city.size / 2), Random.Range(0, 4) * 90, h.type, city);
-                    if (Mathf.Abs(pos.x) == Mathf.Abs(pos.y))
-                    { 
+                    if (Mathf.Abs(pos.x) == Mathf.Abs(pos.y) && !hasChurch)
+                    {
+                        hasChurch = true;
                         house.type = HouseType.church;
                     }
                     city.houses.Add(house);
